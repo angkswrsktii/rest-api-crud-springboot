@@ -1,9 +1,9 @@
-package com.example.restapi.adapter.controller;
+package com.example.restapi.application.controller;
 
-import com.example.restapi.adapter.dto.KendaraanDto;
-import com.example.restapi.adapter.dto.KendaraanRequestDto;
-import com.example.restapi.adapter.persistence.entity.Kendaraan;
-import com.example.restapi.application.KendaraanUseCase;
+import com.example.restapi.domain.data.KendaraanDto;
+import com.example.restapi.domain.data.KendaraanRequestDto;
+import com.example.restapi.infrastructure.entity.Kendaraan;
+import com.example.restapi.domain.services.KendaraanUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +47,7 @@ public class KendaraanController {
         }
     }
 
-    @GetMapping("/byId")
+    @GetMapping("/getById")
     public ResponseEntity<?> getKendaraanById(@RequestParam("kendaraan_id") String kendaraanId) {
         try {
             List<Kendaraan> kendaraanList = kendaraanUseCase.findByKendaraanId(kendaraanId);
@@ -73,7 +73,48 @@ public class KendaraanController {
         }
     }
 
-    @DeleteMapping("/byId")
+    @PutMapping("/updateById")
+    public ResponseEntity<?> updateKendaraan(@RequestParam("kendaraan_id") String kendaraanId,
+                                             @RequestBody KendaraanRequestDto requestDto) 
+    {
+        try {
+            List<Kendaraan> kendaraanList = kendaraanUseCase.findByKendaraanId(kendaraanId);
+            if (kendaraanList.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Kendaraan dengan ID " + kendaraanId + " tidak ditemukan");
+            }
+
+            for (Map.Entry<String, KendaraanDto> entry : requestDto.getKendaraan().entrySet()) {
+                String jenisKendaraan = entry.getKey();
+                KendaraanDto kendaraanDto = entry.getValue();
+                Kendaraan kendaraanToUpdate = null;
+                
+                for (Kendaraan kendaraan : kendaraanList) {
+                    if (kendaraan.getJenisKendaraan().equals(jenisKendaraan)) {
+                        kendaraanToUpdate = kendaraan;
+                        break;
+                    }
+                }
+
+                if (kendaraanToUpdate != null) {
+                    kendaraanToUpdate.setNama(kendaraanDto.getNama());
+                    kendaraanToUpdate.setBensin(kendaraanDto.getBensin());
+                    kendaraanToUpdate.setJumlah(kendaraanDto.getJumlah());
+                    
+                    kendaraanUseCase.save(kendaraanToUpdate);
+                }
+            }
+
+            return ResponseEntity.ok().body("Kendaraan dengan ID " + kendaraanId + " berhasil diperbarui");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Gagal memperbarui kendaraan: " + e.getMessage());
+        }
+    }
+
+
+
+    @DeleteMapping("/deleteById")
     public ResponseEntity<?> deleteKendaraanById(@RequestParam("kendaraan_id") String kendaraanId) {
         try {
             kendaraanUseCase.deleteByKendaraanId(kendaraanId);

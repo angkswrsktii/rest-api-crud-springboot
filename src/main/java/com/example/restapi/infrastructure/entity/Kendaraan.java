@@ -1,6 +1,5 @@
-package com.example.restapi.adapter.persistence.entity;
+package com.example.restapi.infrastructure.entity;
 
-import com.example.restapi.adapter.dto.KendaraanDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,14 +1,14 @@
-package com.example.restapi.application;
+package com.example.restapi.domain.services;
 
-import com.example.restapi.adapter.persistence.entity.Kendaraan;
-import com.example.restapi.adapter.persistence.repository.KendaraanRepository;
-import com.example.restapi.adapter.persistence.service.KendaraanService;
+import com.example.restapi.infrastructure.entity.Kendaraan;
+import com.example.restapi.infrastructure.repository.KendaraanRepository;
+import com.example.restapi.domain.ports.KendaraanPort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class KendaraanUseCase implements KendaraanService {
+public class KendaraanUseCase implements KendaraanPort {
     private final KendaraanRepository kendaraanRepository;
     public KendaraanUseCase(KendaraanRepository kendaraanRepository) {
         this.kendaraanRepository = kendaraanRepository;

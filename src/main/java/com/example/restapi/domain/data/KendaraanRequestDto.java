@@ -1,17 +1,16 @@
-package com.example.restapi.adapter.dto;
+package com.example.restapi.domain.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Map;
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KendaraanDto {
+public class KendaraanRequestDto {
     private String kendaraanId;
-    private String nama;
-    private String bensin;
-    private int jumlah;
+    private Map<String, KendaraanDto> kendaraan;
 }
