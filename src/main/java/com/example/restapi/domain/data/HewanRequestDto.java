@@ -5,13 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Map;
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KendaraanDto {
-    private String jenisKendaraan;
-    private String nama;
-    private String bensin;
-    private int jumlah;
+public class HewanRequestDto {
+    private String hewanId;
+    private Map<String, HewanDto> hewan;
 }

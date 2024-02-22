@@ -9,20 +9,20 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "kendaraan")
+@Table(name = "hewan")
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Kendaraan {
+public class Hewan {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @Column(name = "kendaraan_id")
-    private String kendaraanId;
-    @Column(name = "jenis_kendaraan")
-    private String jenisKendaraan;
+    @Column(name = "hewan_id")
+    private String hewanId;
+    @Column(name = "jenis_hewan")
+    private String jenisHewan;
     private String nama;
-    private String bensin;
+    private String makanan;
     private int jumlah;
 }
