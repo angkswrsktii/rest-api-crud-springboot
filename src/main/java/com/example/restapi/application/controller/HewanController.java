@@ -51,8 +51,9 @@ public class HewanController {
     }
 
     @GetMapping("/getById")
-    public ResponseEntity<?> getHewanById(@RequestParam("hewan_id") String hewanId) {
+    public ResponseEntity<?> getHewanById(@RequestBody HewanRequestDto hewanRequestDto) {
         try {
+            String hewanId = hewanRequestDto.getHewanId();
             List<Hewan> hewanList = hewanServices.findByHewanId(hewanId);
             if (!hewanList.isEmpty()) {
                 return ResponseEntity.ok().body(hewanList);
@@ -122,8 +123,9 @@ public class HewanController {
     }
 
     @DeleteMapping("/deleteById")
-    public ResponseEntity<?> deleteHewanById(@RequestParam("hewan_id") String hewanId) {
+    public ResponseEntity<?> deleteHewanById(@RequestBody HewanRequestDto hewanRequestDto) {
         try {
+            String hewanId = hewanRequestDto.getHewanId();
             List<Hewan> hewanList = hewanServices.findByHewanId(hewanId);
             if (hewanList.isEmpty()) {
                 BaseResponse response = new BaseResponse(HewanHttpStatus.FAILED);
