@@ -66,7 +66,7 @@ public class HewanController {
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping("/getAll")
     public ResponseEntity<?> getAllHewan() {
         try {
             List<Hewan> allHewan = hewanServices.findAllHewan();
