@@ -16,6 +16,5 @@ public class HewanRequestDto {
     @JsonProperty("hewan_id")
     @SerializedName("hewan_id")
     private String hewanId;
-
     private Map<String, HewanDto> hewan;
 }

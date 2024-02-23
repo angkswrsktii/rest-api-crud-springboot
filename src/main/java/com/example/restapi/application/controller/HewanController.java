@@ -6,6 +6,9 @@ import com.example.restapi.domain.data.HewanRequestDto;
 import com.example.restapi.domain.services.HewanServices;
 import com.example.restapi.infrastructure.entity.Hewan;
 import com.example.restapi.infrastructure.util.HewanHttpStatus;
+import com.example.restapi.infrastructure.util.Util;
+import com.google.gson.Gson;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +19,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/hewan")
 public class HewanController {
-
     private final HewanServices hewanServices;
 
     public HewanController(HewanServices hewanServices) {
@@ -47,6 +49,14 @@ public class HewanController {
         } catch (Exception e) {
             BaseResponse response = new BaseResponse(HewanHttpStatus.FAILED);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } finally {
+            Hewan hewan = new Hewan();
+            HewanHttpStatus status = HewanHttpStatus.SUCCESS;
+            String date = Util.getCurrentDate();
+            String statusCode = HewanHttpStatus.getStatusCode(status);
+            String statusDesc = HewanHttpStatus.getStatusDesc(status);
+            Util.debugLogger.debug("date = {} | id = {} | status_code = {} | status_desc = {} | hewan_id = {} | nama = {} | jumlah = {}",
+                    date, hewan.getId(), statusCode, statusDesc, hewan.getHewanId(), hewan.getNama(), hewan.getJumlah());
         }
     }
 

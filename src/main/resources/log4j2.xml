@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <File name="DebugAppender" fileName="logs/debug.log">
+            <PatternLayout>
+                <Pattern>%d | %X{id} | %X{status_code} | %X{status_desc} | %X{hewan_id} | %X{nama} | %X{jumlah}%n</Pattern>
+            </PatternLayout>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Logger name="debugger" level="DEBUG" additivity="false">
+            <AppenderRef ref="DebugAppender"/>
+        </Logger>
+        <Logger name="tdr" level="INFO" additivity="false">
+            <AppenderRef ref="DebugAppender"/>
+        </Logger>
+        <Root level="ERROR">
+            <AppenderRef ref="DebugAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>
