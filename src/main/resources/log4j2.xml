@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <File name="DebugAppender" fileName="logs/debug.log">
-            <PatternLayout>
-                <Pattern>%d | %X{id} | %X{status_code} | %X{status_desc} | %X{hewan_id} | %X{nama} | %X{jumlah}%n</Pattern>
-            </PatternLayout>
+        <File name="DebugLog" fileName="logs/debug.log" append="true">
+            <PatternLayout><Pattern>%d|%X{id}|%X{statusCode}|%X{statusDesc}|%X{hewanId}|%X{nama}|%X{jumlah}%n</Pattern></PatternLayout>
         </File>
+        <Console name="RootConsole" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger - %msg%n" />
+        </Console>
     </Appenders>
     <Loggers>
-        <Logger name="debugger" level="DEBUG" additivity="false">
-            <AppenderRef ref="DebugAppender"/>
+        <Logger name="debugger" level="debug" additivity="false">
+            <AppenderRef ref="DebugLog" />
         </Logger>
-        <Logger name="tdr" level="INFO" additivity="false">
-            <AppenderRef ref="DebugAppender"/>
-        </Logger>
-        <Root level="ERROR">
-            <AppenderRef ref="DebugAppender"/>
+        <Root level="debug">
+            <AppenderRef ref="RootConsole"/>
         </Root>
     </Loggers>
 </Configuration>

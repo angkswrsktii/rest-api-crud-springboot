@@ -1,6 +1,7 @@
 package com.example.restapi.domain.services;
 
 import com.example.restapi.domain.ports.HewanPort;
+import com.example.restapi.domain.validator.AuthorizationValidator;
 import com.example.restapi.infrastructure.entity.Hewan;
 import com.example.restapi.infrastructure.repository.HewanRepository;
 import org.springframework.stereotype.Service;
@@ -9,9 +10,11 @@ import java.util.List;
 
 
 @Service
-public class HewanServices implements HewanPort {
+public class HewanServices extends AuthorizationService implements HewanPort {
     private final HewanRepository hewanRepository;
-    public HewanServices(HewanRepository hewanRepository) {
+    public HewanServices(AuthorizationValidator authorizationValidator,
+                         HewanRepository hewanRepository) {
+        super(authorizationValidator);
         this.hewanRepository = hewanRepository;
     }
     @Override

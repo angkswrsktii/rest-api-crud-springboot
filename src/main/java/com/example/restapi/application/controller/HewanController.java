@@ -3,6 +3,7 @@ package com.example.restapi.application.controller;
 import com.example.restapi.application.response.BaseResponse;
 import com.example.restapi.domain.data.HewanDto;
 import com.example.restapi.domain.data.HewanRequestDto;
+import com.example.restapi.domain.ports.HewanPort;
 import com.example.restapi.domain.services.HewanServices;
 import com.example.restapi.infrastructure.entity.Hewan;
 import com.example.restapi.infrastructure.util.HewanHttpStatus;
@@ -20,14 +21,21 @@ import java.util.Map;
 @RequestMapping("/hewan")
 public class HewanController {
     private final HewanServices hewanServices;
-
+    HewanRequestDto hewanRequestDto;
+    Hewan hewanReq;
     public HewanController(HewanServices hewanServices) {
         this.hewanServices = hewanServices;
     }
 
     @PostMapping
-    public ResponseEntity<?> createHewan(@RequestBody HewanRequestDto requestDto) {
+    public ResponseEntity<?> createHewan(@RequestHeader(value = "Authorization") String authorization,
+                                         @RequestBody HewanRequestDto requestDto) {
         try {
+            if (!hewanServices.checkAuthorization(authorization, requestDto.toString())) {
+                BaseResponse unauthorizedResponse = new BaseResponse(HewanHttpStatus.FAILED);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(unauthorizedResponse);
+            }
+
             String hewanId = requestDto.getHewanId();
 
             for (Map.Entry<String, HewanDto> entry : requestDto.getHewan().entrySet()) {
@@ -42,29 +50,27 @@ public class HewanController {
                 hewan.setJumlah(hewanDto.getJumlah());
 
                 hewanServices.save(hewan);
+                Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanId, HewanHttpStatus.SUCCESS.getStatusCode(), HewanHttpStatus.SUCCESS.getStatusDesc(), hewan.getNama(), hewan.getJumlah());
             }
-
             BaseResponse response = new BaseResponse(HewanHttpStatus.SUCCESS);
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             BaseResponse response = new BaseResponse(HewanHttpStatus.FAILED);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        } finally {
-            Hewan hewan = new Hewan();
-            HewanHttpStatus status = HewanHttpStatus.SUCCESS;
-            String date = Util.getCurrentDate();
-            String statusCode = HewanHttpStatus.getStatusCode(status);
-            String statusDesc = HewanHttpStatus.getStatusDesc(status);
-            Util.debugLogger.debug("date = {} | id = {} | status_code = {} | status_desc = {} | hewan_id = {} | nama = {} | jumlah = {}",
-                    date, hewan.getId(), statusCode, statusDesc, hewan.getHewanId(), hewan.getNama(), hewan.getJumlah());
         }
     }
 
     @GetMapping("/getById")
-    public ResponseEntity<?> getHewanById(@RequestBody HewanRequestDto hewanRequestDto) {
+    public ResponseEntity<?> getHewanById(@RequestHeader(value = "Authorization") String authorization,
+                                          @RequestBody HewanRequestDto requestDto) {
         try {
-            String hewanId = hewanRequestDto.getHewanId();
+            if (!hewanServices.checkAuthorization(authorization, requestDto.toString())) {
+                BaseResponse unauthorizedResponse = new BaseResponse(HewanHttpStatus.FAILED);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(unauthorizedResponse);
+            }
+            String hewanId = requestDto.getHewanId();
             List<Hewan> hewanList = hewanServices.findByHewanId(hewanId);
+            Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanId, HewanHttpStatus.SUCCESS.getStatusCode(), HewanHttpStatus.SUCCESS.getStatusDesc(), hewanReq.getNama(), hewanReq.getJumlah());
             if (!hewanList.isEmpty()) {
                 return ResponseEntity.ok().body(hewanList);
             } else {
@@ -78,9 +84,15 @@ public class HewanController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAllHewan() {
+    public ResponseEntity<?> getAllHewan(@RequestHeader(value = "Authorization") String authorization) {
         try {
+            if (!hewanServices.checkAuthorization(authorization, String.valueOf(hewanRequestDto))) {
+                BaseResponse unauthorizedResponse = new BaseResponse(HewanHttpStatus.FAILED);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(unauthorizedResponse);
+            }
+            String hewanId = hewanReq.getHewanId();
             List<Hewan> allHewan = hewanServices.findAllHewan();
+            Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanId, HewanHttpStatus.SUCCESS.getStatusCode(), HewanHttpStatus.SUCCESS.getStatusDesc(), hewanReq.getNama(), hewanReq.getJumlah());
             if (!allHewan.isEmpty()) {
                 return ResponseEntity.ok().body(allHewan);
             }
@@ -93,10 +105,14 @@ public class HewanController {
     }
 
     @PutMapping("/updateById")
-    public ResponseEntity<?> updateHewan(@RequestParam("hewan_id") String hewanId,
-                                             @RequestBody HewanRequestDto requestDto)
-    {
+    public ResponseEntity<?> updateHewan(@RequestHeader(value = "Authorization") String authorization,
+                                         @RequestParam("hewan_id") String hewanId,
+                                         @RequestBody HewanRequestDto requestDto) {
         try {
+            if (!hewanServices.checkAuthorization(authorization, requestDto.toString())) {
+                BaseResponse unauthorizedResponse = new BaseResponse(HewanHttpStatus.FAILED);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(unauthorizedResponse);
+            }
             List<Hewan> hewanList = hewanServices.findByHewanId(hewanId);
             if (hewanList.isEmpty()) {
                 BaseResponse response = new BaseResponse(HewanHttpStatus.FAILED);
@@ -121,6 +137,7 @@ public class HewanController {
                     hewanToUpdate.setJumlah(hewanDto.getJumlah());
 
                     hewanServices.save(hewanToUpdate);
+                    Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanId, HewanHttpStatus.SUCCESS.getStatusCode(), HewanHttpStatus.SUCCESS.getStatusDesc(), hewanToUpdate.getNama(), hewanToUpdate.getJumlah());
                 }
             }
 
@@ -133,15 +150,21 @@ public class HewanController {
     }
 
     @DeleteMapping("/deleteById")
-    public ResponseEntity<?> deleteHewanById(@RequestBody HewanRequestDto hewanRequestDto) {
+    public ResponseEntity<?> deleteHewanById(@RequestHeader(value = "Authorization") String authorization,
+                                             @RequestBody HewanRequestDto requestDto) {
         try {
-            String hewanId = hewanRequestDto.getHewanId();
+            if (!hewanServices.checkAuthorization(authorization, requestDto.toString())) {
+                BaseResponse unauthorizedResponse = new BaseResponse(HewanHttpStatus.FAILED);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(unauthorizedResponse);
+            }
+            String hewanId = requestDto.getHewanId();
             List<Hewan> hewanList = hewanServices.findByHewanId(hewanId);
             if (hewanList.isEmpty()) {
                 BaseResponse response = new BaseResponse(HewanHttpStatus.FAILED);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
             hewanServices.deleteByHewanId(hewanId);
+            Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanId, HewanHttpStatus.SUCCESS.getStatusCode(), HewanHttpStatus.SUCCESS.getStatusDesc(), hewanReq.getNama(), hewanReq.getJumlah());
             BaseResponse response = new BaseResponse(HewanHttpStatus.SUCCESS);
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {

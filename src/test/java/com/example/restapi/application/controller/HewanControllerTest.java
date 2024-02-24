@@ -48,7 +48,7 @@ public class HewanControllerTest {
         hewanMap.put("kucing", new HewanDto("Kucing", "Whiskas", 2));
         requestDto.setHewan(hewanMap);
         when(hewanServices.save(any(Hewan.class))).thenReturn(new Hewan());
-        ResponseEntity<?> response = hewanController.createHewan(requestDto);
+        ResponseEntity<?> response = hewanController.createHewan(authorization,requestDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -60,7 +60,7 @@ public class HewanControllerTest {
         List<Hewan> hewanList = new ArrayList<>();
         hewanList.add(new Hewan());
         when(hewanServices.findByHewanId("jenis_hewan|0001")).thenReturn(hewanList);
-        ResponseEntity<?> response = hewanController.getHewanById(hewanRequestDto);
+        ResponseEntity<?> response = hewanController.getHewanById(authorization,hewanRequestDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -69,7 +69,7 @@ public class HewanControllerTest {
         List<Hewan> hewanList = new ArrayList<>();
         hewanList.add(new Hewan());
         when(hewanServices.findAllHewan()).thenReturn(hewanList);
-        ResponseEntity<?> response = hewanController.getAllHewan();
+        ResponseEntity<?> response = hewanController.getAllHewan(authorization);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -80,7 +80,7 @@ public class HewanControllerTest {
         List<Hewan> hewanList = new ArrayList<>();
         hewanList.add(new Hewan());
         when(hewanServices.findByHewanId("jenis_hewan|0001")).thenReturn(hewanList);
-        ResponseEntity<?> response = hewanController.deleteHewanById(hewanRequestDto);
+        ResponseEntity<?> response = hewanController.deleteHewanById(authorization, hewanRequestDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 

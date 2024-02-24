@@ -14,12 +14,4 @@ public enum HewanHttpStatus {
     private String statusCode;
     private String statusDesc;
     private String responseTime;
-
-    public static String getStatusCode(HewanHttpStatus status) {
-        return status.statusCode;
-    }
-
-    public static String getStatusDesc(HewanHttpStatus status) {
-        return status.statusDesc;
-    }
 }

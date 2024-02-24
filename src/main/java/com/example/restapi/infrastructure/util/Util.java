@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -48,5 +49,22 @@ public class Util {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return now.format(formatter);
+    }
+    public static boolean isEmptyOrNull(Object obj) {
+        if (obj == null) return true;
+        if (obj instanceof String)
+            return ((String) obj).isEmpty();
+        else if (obj instanceof Collection)
+            return ((Collection<?>) obj).isEmpty();
+        return false;
+    }
+
+    public static boolean isNotEmptyOrNull(Object obj) {
+        if (obj == null) return false;
+        if (obj instanceof String)
+            return !((String) obj).isEmpty();
+        else if (obj instanceof Collection)
+            return !((Collection<?>) obj).isEmpty();
+        return true;
     }
 }
