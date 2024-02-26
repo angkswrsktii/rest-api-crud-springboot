@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
 <Configuration status="WARN">
     <Appenders>
-        <File name="DebugLog" fileName="logs/debug.log" append="true">
-            <PatternLayout><Pattern>%d|%X{id}|%X{statusCode}|%X{statusDesc}|%X{hewanId}|%X{nama}|%X{jumlah}%n</Pattern></PatternLayout>
-        </File>
+        <RollingFile name="DebugAppender"
+                     fileName="logs/debug.log"
+                     filePattern="logs/debug_%d{yyyyMMdd_HH}.log">
+            <PatternLayout>
+                <Pattern>%d|%X{id}|%X{statusCode}|%X{statusDesc}|%X{hewanId}|%X{nama}|%X{jumlah}%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+            </Policies>
+        </RollingFile>
         <Console name="RootConsole" target="SYSTEM_OUT">
             <PatternLayout
                     pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger - %msg%n" />
@@ -11,10 +19,10 @@
     </Appenders>
     <Loggers>
         <Logger name="debugger" level="debug" additivity="false">
-            <AppenderRef ref="DebugLog" />
+            <AppenderRef ref="DebugAppender" />
         </Logger>
-        <Root level="debug">
-            <AppenderRef ref="RootConsole"/>
+        <Root level="info">
+            <AppenderRef ref="RootConsole" />
         </Root>
     </Loggers>
 </Configuration>

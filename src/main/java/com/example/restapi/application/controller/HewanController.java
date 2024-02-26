@@ -3,26 +3,26 @@ package com.example.restapi.application.controller;
 import com.example.restapi.application.response.BaseResponse;
 import com.example.restapi.domain.data.HewanDto;
 import com.example.restapi.domain.data.HewanRequestDto;
-import com.example.restapi.domain.ports.HewanPort;
 import com.example.restapi.domain.services.HewanServices;
 import com.example.restapi.infrastructure.entity.Hewan;
 import com.example.restapi.infrastructure.util.HewanHttpStatus;
 import com.example.restapi.infrastructure.util.Util;
 import com.google.gson.Gson;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/hewan")
 public class HewanController {
     private final HewanServices hewanServices;
     HewanRequestDto hewanRequestDto;
-    Hewan hewanReq;
+    Hewan hewanReq = new Hewan();
     public HewanController(HewanServices hewanServices) {
         this.hewanServices = hewanServices;
     }
@@ -49,14 +49,24 @@ public class HewanController {
                 hewan.setMakanan(hewanDto.getMakanan());
                 hewan.setJumlah(hewanDto.getJumlah());
 
-                hewanServices.save(hewan);
-                Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanId, HewanHttpStatus.SUCCESS.getStatusCode(), HewanHttpStatus.SUCCESS.getStatusDesc(), hewan.getNama(), hewan.getJumlah());
+                Hewan savedHewan =  hewanServices.save(hewan);
+                ThreadContext.put("id", String.valueOf(savedHewan.getId()));
+                ThreadContext.put("statusCode", HewanHttpStatus.SUCCESS.getStatusCode());
+                ThreadContext.put("statusDesc", HewanHttpStatus.SUCCESS.getStatusDesc());
+                ThreadContext.put("hewanId", savedHewan.getHewanId());
+                ThreadContext.put("nama", savedHewan.getNama());
+                ThreadContext.put("jumlah", String.valueOf(savedHewan.getJumlah()));
             }
             BaseResponse response = new BaseResponse(HewanHttpStatus.SUCCESS);
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             BaseResponse response = new BaseResponse(HewanHttpStatus.FAILED);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } finally {
+            Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanReq.getId(),
+                    ThreadContext.get("statusCode"), ThreadContext.get("statusDesc"),
+                    ThreadContext.get("hewanId"), ThreadContext.get("nama"), ThreadContext.get("jumlah"));
+            ThreadContext.clearAll();
         }
     }
 
@@ -70,7 +80,15 @@ public class HewanController {
             }
             String hewanId = requestDto.getHewanId();
             List<Hewan> hewanList = hewanServices.findByHewanId(hewanId);
-            Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanId, HewanHttpStatus.SUCCESS.getStatusCode(), HewanHttpStatus.SUCCESS.getStatusDesc(), hewanReq.getNama(), hewanReq.getJumlah());
+            for (Hewan hewan : hewanList) {
+                ThreadContext.put("id", String.valueOf(hewan.getId()));
+                ThreadContext.put("statusCode", HewanHttpStatus.SUCCESS.getStatusCode());
+                ThreadContext.put("statusDesc", HewanHttpStatus.SUCCESS.getStatusDesc());
+                ThreadContext.put("hewanId", hewan.getHewanId());
+                ThreadContext.put("nama", hewan.getNama());
+                ThreadContext.put("jumlah", String.valueOf(hewan.getJumlah()));
+            }
+
             if (!hewanList.isEmpty()) {
                 return ResponseEntity.ok().body(hewanList);
             } else {
@@ -80,6 +98,11 @@ public class HewanController {
         } catch (Exception e) {
             BaseResponse response = new BaseResponse(HewanHttpStatus.FAILED);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } finally {
+            Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanReq.getId(),
+                    ThreadContext.get("statusCode"), ThreadContext.get("statusDesc"),
+                    ThreadContext.get("hewanId"), ThreadContext.get("nama"), ThreadContext.get("jumlah"));
+            ThreadContext.clearAll();
         }
     }
 
@@ -90,9 +113,15 @@ public class HewanController {
                 BaseResponse unauthorizedResponse = new BaseResponse(HewanHttpStatus.FAILED);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(unauthorizedResponse);
             }
-            String hewanId = hewanReq.getHewanId();
             List<Hewan> allHewan = hewanServices.findAllHewan();
-            Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanId, HewanHttpStatus.SUCCESS.getStatusCode(), HewanHttpStatus.SUCCESS.getStatusDesc(), hewanReq.getNama(), hewanReq.getJumlah());
+            for (Hewan hewan : allHewan) {
+                ThreadContext.put("id", String.valueOf(hewan.getId()));
+                ThreadContext.put("statusCode", HewanHttpStatus.SUCCESS.getStatusCode());
+                ThreadContext.put("statusDesc", HewanHttpStatus.SUCCESS.getStatusDesc());
+                ThreadContext.put("hewanId", hewan.getHewanId());
+                ThreadContext.put("nama", hewan.getNama());
+                ThreadContext.put("jumlah", String.valueOf(hewan.getJumlah()));
+            }
             if (!allHewan.isEmpty()) {
                 return ResponseEntity.ok().body(allHewan);
             }
@@ -101,6 +130,11 @@ public class HewanController {
         } catch (Exception e) {
             BaseResponse response = new BaseResponse(HewanHttpStatus.FAILED);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } finally {
+            Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanReq.getId(),
+                    ThreadContext.get("statusCode"), ThreadContext.get("statusDesc"),
+                    ThreadContext.get("hewanId"), ThreadContext.get("nama"), ThreadContext.get("jumlah"));
+            ThreadContext.clearAll();
         }
     }
 
@@ -136,8 +170,13 @@ public class HewanController {
                     hewanToUpdate.setMakanan(hewanDto.getMakanan());
                     hewanToUpdate.setJumlah(hewanDto.getJumlah());
 
-                    hewanServices.save(hewanToUpdate);
-                    Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanId, HewanHttpStatus.SUCCESS.getStatusCode(), HewanHttpStatus.SUCCESS.getStatusDesc(), hewanToUpdate.getNama(), hewanToUpdate.getJumlah());
+                    Hewan savedHewan = hewanServices.save(hewanToUpdate);
+                    ThreadContext.put("id", String.valueOf(savedHewan.getId()));
+                    ThreadContext.put("statusCode", HewanHttpStatus.SUCCESS.getStatusCode());
+                    ThreadContext.put("statusDesc", HewanHttpStatus.SUCCESS.getStatusDesc());
+                    ThreadContext.put("hewanId", savedHewan.getHewanId());
+                    ThreadContext.put("nama", savedHewan.getNama());
+                    ThreadContext.put("jumlah", String.valueOf(savedHewan.getJumlah()));
                 }
             }
 
@@ -146,6 +185,11 @@ public class HewanController {
         } catch (Exception e) {
             BaseResponse response = new BaseResponse(HewanHttpStatus.FAILED);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } finally {
+            Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanReq.getId(),
+                    ThreadContext.get("statusCode"), ThreadContext.get("statusDesc"),
+                    ThreadContext.get("hewanId"), ThreadContext.get("nama"), ThreadContext.get("jumlah"));
+            ThreadContext.clearAll();
         }
     }
 
@@ -163,13 +207,24 @@ public class HewanController {
                 BaseResponse response = new BaseResponse(HewanHttpStatus.FAILED);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
-            hewanServices.deleteByHewanId(hewanId);
-            Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanId, HewanHttpStatus.SUCCESS.getStatusCode(), HewanHttpStatus.SUCCESS.getStatusDesc(), hewanReq.getNama(), hewanReq.getJumlah());
+            for (Hewan hewan : hewanList) {
+                ThreadContext.put("id", String.valueOf(hewan.getId()));
+                ThreadContext.put("hewanId", hewan.getHewanId());
+                ThreadContext.put("nama", hewan.getNama());
+                ThreadContext.put("jumlah", String.valueOf(hewan.getJumlah()));
+                Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewanReq.getId(),
+                        ThreadContext.get("statusCode"), ThreadContext.get("statusDesc"),
+                        ThreadContext.get("hewanId"), ThreadContext.get("nama"), ThreadContext.get("jumlah"));
+                ThreadContext.clearAll();
+                hewanServices.deleteByHewanId(hewanId);
+            }
             BaseResponse response = new BaseResponse(HewanHttpStatus.SUCCESS);
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             BaseResponse response = new BaseResponse(HewanHttpStatus.FAILED);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } finally {
+            ThreadContext.clearAll();
         }
     }
 }
