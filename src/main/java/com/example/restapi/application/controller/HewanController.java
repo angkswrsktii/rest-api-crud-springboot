@@ -7,6 +7,7 @@ import com.example.restapi.domain.services.HewanServices;
 import com.example.restapi.infrastructure.entity.Hewan;
 import com.example.restapi.infrastructure.util.HewanHttpStatus;
 import com.example.restapi.infrastructure.util.Util;
+import com.google.gson.Gson;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +15,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/hewan")
 public class HewanController {
     private final HewanServices hewanServices;
     HewanRequestDto hewanRequestDto;
-    Hewan hewanReq = new Hewan();
+    HewanDto hewanDto;
+    HewanHttpStatus hewanHttpStatus;
     public HewanController(HewanServices hewanServices) {
         this.hewanServices = hewanServices;
     }
@@ -30,6 +31,8 @@ public class HewanController {
     public ResponseEntity<?> createHewan(@RequestHeader(value = "Authorization") String authorization,
                                          @RequestBody HewanRequestDto requestDto) {
         try {
+            ThreadContext.put("auth", authorization);
+            Util.debugLogger.debug("Authorization = {}", authorization);
             if (!hewanServices.checkAuthorization(authorization, requestDto.toString())) {
                 BaseResponse unauthorizedResponse = new BaseResponse(HewanHttpStatus.FAILED);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(unauthorizedResponse);
@@ -198,7 +201,6 @@ public class HewanController {
             ThreadContext.put("nama", hewan.getNama());
             ThreadContext.put("jumlah", String.valueOf(hewan.getJumlah()));
 
-            // Ubah jenis hewan menjadi jenis_hewan_<jenis_hewan>
             String jenisHewan = ThreadContext.get("jenis_hewan");
             String jenisHewanWithId = "jenis_hewan_" + hewan.getHewanId();
             ThreadContext.put("jenis_hewan", jenisHewan != null ? jenisHewan + "|" + hewan.getHewanId() : jenisHewanWithId);

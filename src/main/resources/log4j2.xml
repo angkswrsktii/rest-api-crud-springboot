@@ -6,7 +6,7 @@
                      fileName="logs/debug.log"
                      filePattern="logs/debug_%d{yyyyMMdd_HH}.log">
             <PatternLayout>
-                <Pattern>%d|%X{id}|%X{statusCode}|%X{statusDesc}|%X{hewanId}|%X{nama}|%X{jumlah}%n</Pattern>
+                <Pattern>%d|%X{auth}%n</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" />
