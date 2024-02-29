@@ -69,6 +69,8 @@ public class HewanController {
     public ResponseEntity<?> getHewanById(@RequestHeader(value = "Authorization") String authorization,
                                           @RequestBody HewanRequestDto requestDto) {
         try {
+            ThreadContext.put("auth", authorization);
+            Util.debugLogger.debug("Authorization = {}", authorization);
             if (!hewanServices.checkAuthorization(authorization, requestDto.toString())) {
                 BaseResponse unauthorizedResponse = new BaseResponse(HewanHttpStatus.FAILED);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(unauthorizedResponse);
@@ -96,6 +98,8 @@ public class HewanController {
     @GetMapping("/getAll")
     public ResponseEntity<?> getAllHewan(@RequestHeader(value = "Authorization") String authorization) {
         try {
+            ThreadContext.put("auth", authorization);
+            Util.debugLogger.debug("Authorization = {}", authorization);
             if (!hewanServices.checkAuthorization(authorization, String.valueOf(hewanRequestDto))) {
                 BaseResponse unauthorizedResponse = new BaseResponse(HewanHttpStatus.FAILED);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(unauthorizedResponse);
@@ -122,6 +126,8 @@ public class HewanController {
                                          @RequestParam("hewan_id") String hewanId,
                                          @RequestBody HewanRequestDto requestDto) {
         try {
+            ThreadContext.put("auth", authorization);
+            Util.debugLogger.debug("Authorization = {}", authorization);
             if (!hewanServices.checkAuthorization(authorization, requestDto.toString())) {
                 BaseResponse unauthorizedResponse = new BaseResponse(HewanHttpStatus.FAILED);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(unauthorizedResponse);
@@ -168,6 +174,8 @@ public class HewanController {
     public ResponseEntity<?> deleteHewanById(@RequestHeader(value = "Authorization") String authorization,
                                              @RequestBody HewanRequestDto requestDto) {
         try {
+            ThreadContext.put("auth", authorization);
+            Util.debugLogger.debug("Authorization = {}", authorization);
             if (!hewanServices.checkAuthorization(authorization, requestDto.toString())) {
                 BaseResponse unauthorizedResponse = new BaseResponse(HewanHttpStatus.FAILED);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(unauthorizedResponse);
