@@ -12,14 +12,28 @@
                 <TimeBasedTriggeringPolicy interval="1" />
             </Policies>
         </RollingFile>
+        <RollingFile name="HewanTdrAppender"
+                     fileName="logs/HEWAN.log"
+                     filePattern="logs/HEWAN_%d{yyyyMMdd_HH}.log">
+            <PatternLayout>
+                <Pattern>%d|%X{id}|%X{statusCode}|%X{statusDesc}|%X{hewanId}|%X{nama}|%X{jumlah}%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+            </Policies>
+        </RollingFile>
+
         <Console name="RootConsole" target="SYSTEM_OUT">
             <PatternLayout
                     pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger - %msg%n" />
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="debugger" level="debug" additivity="false">
+        <Logger name="debugger" level="info" additivity="false">
             <AppenderRef ref="DebugAppender" />
+        </Logger>
+        <Logger name="hewanTdr" level="info" additivity="false">
+            <AppenderRef ref="HewanTdrAppender" />
         </Logger>
         <Root level="info">
             <AppenderRef ref="RootConsole" />

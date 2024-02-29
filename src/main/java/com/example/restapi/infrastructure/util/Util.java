@@ -7,12 +7,22 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Base64;
 
 public class Util {
     public static final Logger debugLogger = LogManager.getLogger("debugger");
+    public static final Logger tdrLogger = LogManager.getLogger("hewanTdr");
+
+    public static void loggingTdr(Object...args){
+        Util.tdrLogger.info(toDelimiterString("|", args));
+    }
+    public static String toDelimiterString(String delimiter, Object...args){
+        return Arrays.stream(args).map(String::valueOf).collect(Collectors.joining(delimiter));
+    }
 
     public static String encodeBase64(String inputString) {
         String base64 = "";

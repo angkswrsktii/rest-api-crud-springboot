@@ -203,7 +203,7 @@ public class HewanController {
             String jenisHewanWithId = "jenis_hewan_" + hewan.getHewanId();
             ThreadContext.put("jenis_hewan", jenisHewan != null ? jenisHewan + "|" + hewan.getHewanId() : jenisHewanWithId);
 
-            Util.debugLogger.debug("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewan.getId(),
+            Util.loggingTdr("{}|{}|{}|{}|{}|{}|{}", Util.getCurrentDate(), hewan.getId(),
                     ThreadContext.get("statusCode"), ThreadContext.get("statusDesc"),
                     ThreadContext.get("jenis_hewan"), ThreadContext.get("nama"), ThreadContext.get("jumlah"));
         }
